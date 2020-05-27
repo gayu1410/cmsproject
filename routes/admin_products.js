@@ -12,7 +12,7 @@ var Category = require('../models/category');
 
 /*
  * GET products index
- */
+*/
 router.get('/', function (req, res) {
     var count;
 
@@ -54,7 +54,10 @@ router.get('/add-product',  function (req, res) {
  */
 router.post('/add-product', function (req, res) {
 
-    var imageFile = typeof req.files.image !== "undefined" ? req.files.image.name : "";
+    if(!req.files){ imageFile =""; }
+   if(req.files){
+   var imageFile = typeof(req.files.image) !== "undefined" ? req.files.image.name : "";
+
 
     req.checkBody('title', 'Title must have a value.').notEmpty();
     req.checkBody('desc', 'Description must have a value.').notEmpty();
@@ -104,30 +107,32 @@ router.post('/add-product', function (req, res) {
                     image: imageFile
                 });
 
-                product.save(function (err) {
-                    if (err)
-                        return console.log(err);
-                    try{
-                        
-                        mkdirp('../public/product_images/' + product._id);
 
-                        mkdirp('../public/product_images/' + product._id + '/gallery');
+product.save(function (err) {
+                   if (err)
+                       return console.log(err);
+                    
+                    
+                    console.log("creating dir");
+                    const address=__dirname +'/../public/product_images/'+product._id+'/gallery/thumbs';
+                    fs.mkdir( address,{recursive:true},(err)=>{
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            if (imageFile != "") {
+                                var productImage = req.files.image;
+                                var  pa = path.join(address, imageFile);
 
-                        mkdirp('../public/product_images/' + product._id + '/gallery/thumbs');
-
-                    }catch(err){
-                        console.log(err);
-                    }
-
-                    if (imageFile != "") {
-                        var productImage = req.files.image;
-                        var path = '../public/product_images/' + product._id + '/' + imageFile;
-
-                        productImage.mv(path, function (err) {
-                            return console.log(err);
+                                fs.appendFile(pa,productImage.data,function(err){
+                                    if (err) {
+                                        console.log(err);
+                                    } else {
+                                        console.log("picture saved");
+                                    }
+                                });  
+                                }
+                            }
                         });
-                    }
-
                     req.flash('success', 'Product added!');
                     res.redirect('/admin/products');
                 });
@@ -135,7 +140,7 @@ router.post('/add-product', function (req, res) {
         });
     }
 
-});
+};
 
 /*
  * GET edit product
@@ -155,7 +160,7 @@ router.get('/edit-product/:id', function (req, res) {
                 console.log(err);
                 res.redirect('/admin/products');
             } else {
-                var galleryDir = 'public/product_images/' + p._id + '/gallery';
+                var galleryDir = '..public/product_images/' + p._id + '/gallery/thumbs';
                 var galleryImages = null;
 
                 fs.readdir(galleryDir, function (err, files) {
@@ -189,7 +194,10 @@ router.get('/edit-product/:id', function (req, res) {
  */
 router.post('/edit-product/:id', function (req, res) {
 
-    var imageFile = typeof req.files.image !== "undefined" ? req.files.image.name : "";
+     if(!req.files){ imageFile =""; }
+   if(req.files){
+   var imageFile = typeof(req.files.image) !== "undefined" ? req.files.image.name : "";
+
 
     req.checkBody('title', 'Title must have a value.').notEmpty();
     req.checkBody('desc', 'Description must have a value.').notEmpty();
@@ -237,17 +245,25 @@ router.post('/edit-product/:id', function (req, res) {
 
                         if (imageFile != "") {
                             if (pimage != "") {
-                                fs.remove('public/product_images/' + id + '/' + pimage, function (err) {
+                                fs.remove('../public/product_images/' + id + '/gallery/thumbs/' + pimage, function (err) {
                                     if (err)
                                         console.log(err);
                                 });
                             }
 
                             var productImage = req.files.image;
-                            var path = 'public/product_images/' + id + '/' + imageFile;
+                            var path = '..public/product_images/' + id + '/gallery/thumbs/' + imageFile;
 
-                            productImage.mv(path, function (err) {
-                                return console.log(err);
+                            //productImage.mv(path, function (err) {
+                              //  return console.log(err);
+
+
+                            fs.appendFile(path,productImage.data,(err)=>{
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log("picture saved");
+                                }
                             });
 
                         }
