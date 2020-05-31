@@ -36,14 +36,16 @@ app.use(bodyParser.json());
 var Page = require("./models/page");
 
 //get all pages to pass through pages.ejs
-Page.find({}).sort({sorting: 1}).exec(functions(err, pages){
-  if(err){
+Page
+.find({}) 
+.sort({sorting: 1})
+.exec(function (err, pages){
+  if (err){
     console.log(err);
   } else {
     app.locals.pages = pages;
   }
 });
-
 //setting file upload to use
 app.use(fileUpload());
 

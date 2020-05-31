@@ -288,35 +288,24 @@ router.post("/edit-product/:id", function (req, res) {
 router.post("/product-gallery/:id", function (req, res) {
   var productImage = req.files.file;
   var id = req.params.id;
-  var path =
-    "../public/product_images/" + id + "/gallery/" + req.files.file.name;
+ 
   var thumbsPath =
     "../public/product_images/" + id + "/gallery/thumbs/" + req.files.file.name;
 
-  fs.appendFile(path, productImage.data, function (err) {
-    if (err) console.log(err);
 
-    resizeImg(fs.readFileSync(path), { width: 100, height: 100 }).then(
-      function (buf) {
-        fs.writeFileSync(thumbsPath, buf);
-      }
-    );
 
-    var productImage = req.files.image;
-    var path =
-      "../public/product_images/" + id + "/gallery/thumbs/" + imageFile;
 
     //productImage.mv(path, function (err) {
     //  return console.log(err);
 
-    fs.appendFile(path, productImage.data, (err) => {
+    fs.appendFile(thumbsPath, productImage.data, (err) => {
       if (err) {
         console.log(err);
       } else {
         console.log("picture saved");
       }
     });
-  });
+ 
 
   res.sendStatus(200);
 });
@@ -335,9 +324,10 @@ router.get("/delete-image/:image", function (req, res) {
     req.query.id +
     "/gallery/thumbs/" +
     req.params.image;
-
+  
+  
   fs.remove(originalImage, function (err) {
-    console.log(err);
+
     if (err) {
       console.log(err);
     } else {
