@@ -232,7 +232,7 @@ router.post("/edit-product/:id", function (req, res) {
 
             if (pimage != "") {
               fs.unlink(
-                __dirname + "/../public/product_images/" + id + pimage,
+                `${__dirname}/../public/product_images/${id}/${pimage}`,
                 function (err) {
                   if (err) console.log(err);
                 }
@@ -295,7 +295,7 @@ router.post("/product-gallery/:id", function (req, res) {
 router.get("/delete-image/:image", function (req, res) {
   var originalImage = `${__dirname}/../public/product_images/${req.query.id}/${req.params.image}`;
 
-  fs.remove(originalImage, function (err) {
+  fs.unlink(originalImage, function (err) {
     if (err) {
       console.log(err);
     } else {
@@ -312,7 +312,7 @@ router.get("/delete-product/:id", function (req, res) {
   var id = req.params.id;
   var path = `${__dirname}/../public/product_images/${id}`;
 
-  fs.remove(path, function (err) {
+  fs.unlink(path, function (err) {
     if (err) {
       console.log(err);
     } else {
