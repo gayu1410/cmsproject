@@ -229,24 +229,23 @@ router.post("/edit-product/:id", function (req, res) {
 
           p.save(function (err) {
             if (err) console.log(err);
-
-            if (pimage != "") {
-              fs.unlink(
-                __dirname + "/../public/product_images/" + id + pimage,
-                function (err) {
-                  if (err) console.log(err);
-                }
-              );
-            }
-            if (imageFile != "") {
-              const address = __dirname + "/../public/product_images/" + p._id;
+            if (imageFile !== "") {
+              if (pimage != "") {
+                fs.unlink(
+                  `${__dirname}/../public/product_images/${id}/${pimage}`,
+                  function (err) {
+                    if (err) console.log(err);
+                  }
+                );
+              }
+              const address = `${__dirname}/../public/product_images/${p._id}`;
               fs.mkdir(address, { recursive: true }, (err) => {
                 if (err) {
                   console.log(err);
                 } else {
                   if (imageFile != "") {
                     var productImage = req.files.image;
-                    var paimagePath = path.join(address, imageFile);
+                    var imagePath = path.join(address, imageFile);
 
                     fs.appendFile(imagePath, productImage.data, function (err) {
                       if (err) {
@@ -295,7 +294,7 @@ router.post("/product-gallery/:id", function (req, res) {
 router.get("/delete-image/:image", function (req, res) {
   var originalImage = `${__dirname}/../public/product_images/${req.query.id}/${req.params.image}`;
 
-  fs.remove(originalImage, function (err) {
+  fs.unlink(originalImage, function (err) {
     if (err) {
       console.log(err);
     } else {
@@ -312,7 +311,7 @@ router.get("/delete-product/:id", function (req, res) {
   var id = req.params.id;
   var path = `${__dirname}/../public/product_images/${id}`;
 
-  fs.remove(path, function (err) {
+  fs.unlink(path, function (err) {
     if (err) {
       console.log(err);
     } else {

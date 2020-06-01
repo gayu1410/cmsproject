@@ -138,13 +138,14 @@ router.post('/edit-category/:id', function (req, res) {
                         if (err)
                             return console.log(err);
 
+
                         Category.find(function (err, categories) {
                             if (err) {
-                                console.log(err);
+                              console.log(err);
                             } else {
-                                req.app.locals.categories = categories;
+                              app.locals.categories = categories;
                             }
-                        });
+                          });
 
                         req.flash('success', 'Category edited!');
                         res.redirect('/admin/categories/edit-category/' + id);

@@ -1,4 +1,4 @@
-var express = require("express");
+ var express = require("express");
 var router = express.Router();
 
 // Get Page model
@@ -12,8 +12,8 @@ router.get("/", function (req, res) {
     if (err) console.log(err);
 
     res.render("index", {
-      title: page === null ? "Home page" : page.title,
-      content: page === null ? "Home page" : page.content,
+      title:  page.title,
+      content:  page.content
     });
   });
 });
@@ -33,6 +33,7 @@ router.get("/:slug", function (req, res) {
       res.render("index", {
         title: page.title,
         content: page.content,
+        slug:page.slug
       });
     }
   });

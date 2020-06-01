@@ -8,10 +8,20 @@ const session = require("express-session");
 const expressValidator = require("express-validator");
 const fileUpload = require("express-fileupload");
 
-mongoose.connect("mongodb://localhost:27017/config", {
-  useUnifiedTopology: true,
-  useNewUrlParser: true,
-});
+mongoose.connect(
+  "mongodb://localhost:27017/config",
+  {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  },
+  (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("DB connected");
+    }
+  }
+);
 
 // .then(()=>{console.log("db Connected");});
 mongoose.connection.on("error", (err) => {
@@ -36,16 +46,28 @@ app.use(bodyParser.json());
 var Page = require("./models/page");
 
 //get all pages to pass through pages.ejs
-Page
-.find({}) 
-.sort({sorting: 1})
-.exec(function (err, pages){
-  if (err){
+Page.find({})
+  .sort({ sorting: 1 })
+  .exec(function (err, pages) {
+    if (err) {
+      console.log(err);
+    } else {
+      app.locals.pages = pages;
+    }
+  });
+
+  //get category model
+var Category = require("./models/category");
+
+  //get all categories to pass through pages.ejs
+Category.find(function (err, categories) {
+  if (err) {
     console.log(err);
   } else {
-    app.locals.pages = pages;
+    app.locals.categories = categories;
   }
 });
+
 //setting file upload to use
 app.use(fileUpload());
 
@@ -103,7 +125,14 @@ app.use(function (req, res, next) {
   next();
 });
 
+app.use("*",function(req,res,next){
+  res.locals.cart = req,session.cart;
+  next();
+});
+
 const pages = require("./routes/pages.js");
+const products = require("./routes/products.js");
+const cart = require("./routes/cart.js");
 const adminPages = require("./routes/admin_pages.js");
 const adminCategories = require("./routes/admin_categories.js");
 const adminProducts = require("./routes/admin_products.js");
@@ -111,7 +140,9 @@ const adminProducts = require("./routes/admin_products.js");
 /*use router for different js pages as we have to run the whole code using app.js so all the
  different sections js pages have to be connected here*/
 app.use("/admin/pages", adminPages);
+app.use("/products", products);
 app.use("/admin/categories", adminCategories);
+app.use("/products", cart);
 app.use("/admin/products", adminProducts);
 app.use("/", pages);
 
