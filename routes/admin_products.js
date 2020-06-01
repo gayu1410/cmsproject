@@ -229,16 +229,18 @@ router.post("/edit-product/:id", function (req, res) {
 
           p.save(function (err) {
             if (err) console.log(err);
-            if (imageFile !== "") {
-              if (pimage != "") {
+            const address = `${__dirname}/../public/product_images/${p._id}`;
+           
+
+              if (imageFile != "") {
+                if (pimage != "") {
                 fs.unlink(
                   `${__dirname}/../public/product_images/${id}/${pimage}`,
                   function (err) {
                     if (err) console.log(err);
-                  }
-                );
+                })
               }
-              const address = `${__dirname}/../public/product_images/${p._id}`;
+              
               fs.mkdir(address, { recursive: true }, (err) => {
                 if (err) {
                   console.log(err);
