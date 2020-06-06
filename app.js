@@ -7,6 +7,8 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const expressValidator = require("express-validator");
 const fileUpload = require("express-fileupload");
+var passport = require('passport');
+
 
 mongoose.connect(
   "mongodb://localhost:27017/config",
@@ -78,7 +80,7 @@ app.use(
     secret: "keyboard cat",
     resave: true,
     saveUninitialized: true,
-    //  cookie: { secure: true }
+     cookie: { secure: true }
   })
 );
 //express validator middleware
@@ -125,14 +127,24 @@ app.use(function (req, res, next) {
   next();
 });
 
+// Passport Config
+require('./config/passport')(passport);
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use("*",function(req,res,next){
-  res.locals.cart = req,session.cart;
+  // console.log(req.user);
+  
+  res.locals.cart = req.session.cart;
+  res.locals.users = req.user || null;
   next();
 });
 
 const pages = require("./routes/pages.js");
 const products = require("./routes/products.js");
 const cart = require("./routes/cart.js");
+const users = require("./routes/users.js");
 const adminPages = require("./routes/admin_pages.js");
 const adminCategories = require("./routes/admin_categories.js");
 const adminProducts = require("./routes/admin_products.js");
@@ -142,7 +154,8 @@ const adminProducts = require("./routes/admin_products.js");
 app.use("/admin/pages", adminPages);
 app.use("/products", products);
 app.use("/admin/categories", adminCategories);
-app.use("/products", cart);
+app.use("/cart", cart);
+app.use("/users", users);
 app.use("/admin/products", adminProducts);
 app.use("/", pages);
 

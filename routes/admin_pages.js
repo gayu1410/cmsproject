@@ -11,7 +11,8 @@ var Page = require('../models/page');
 router.get('/', function (req, res) {
     Page.find({}).sort({sorting: 1}).exec(function (err, pages) {
         res.render('admin/pages', {
-            pages: pages
+            pages: pages,
+            user: res.locals.user
         });
     });
 });
@@ -28,7 +29,8 @@ router.get('/add-page', function (req, res) {
     res.render('admin/add_page', {
         title: title,
         slug: slug,
-        content: content
+        content: content,
+        user: res.locals.user
     });
 
 });
@@ -54,7 +56,8 @@ router.post('/add-page', function (req, res) {
             errors: errors,
             title: title,
             slug: slug,
-            content: content
+            content: content,
+            user: res.locals.user
         });
     } else {
         Page.findOne({slug: slug}, function (err, page) {
@@ -63,7 +66,8 @@ router.post('/add-page', function (req, res) {
                 res.render('admin/add_page', {
                     title: title,
                     slug: slug,
-                    content: content
+                    content: content,
+                    user: res.locals.user
                 });
             } else {
                 var page = new Page({
@@ -150,7 +154,8 @@ router.get('/edit-page/:id', function (req, res) {
             title: page.title,
             slug: page.slug,
             content: page.content,
-            id: page._id
+            id: page._id,
+            user: res.locals.user
         });
     });
 
@@ -179,7 +184,8 @@ router.post('/edit-page/:id', function (req, res) {
             title: title,
             slug: slug,
             content: content,
-            id: id
+            id: id,
+            user: res.locals.user
         });
     } else {
         Page.findOne({slug: slug, _id: {'$ne': id}}, function (err, page) {
@@ -189,7 +195,8 @@ router.post('/edit-page/:id', function (req, res) {
                     title: title,
                     slug: slug,
                     content: content,
-                    id: id
+                    id: id,
+                    user: res.locals.user
                 });
             } else {
 

@@ -24,6 +24,7 @@ router.get("/", function (req, res) {
     res.render("admin/products", {
       products: products,
       count: count,
+      user: res.locals.user
     });
   });
 });
@@ -42,6 +43,7 @@ router.get("/add-product", function (req, res) {
       desc: desc,
       categories: categories,
       price: price,
+      user: res.locals.user
     });
   });
 });
@@ -79,6 +81,7 @@ router.post("/add-product", function (req, res) {
         desc: desc,
         categories: categories,
         price: price,
+        user: res.locals.user
       });
     });
   } else {
@@ -91,6 +94,7 @@ router.post("/add-product", function (req, res) {
             desc: desc,
             categories: categories,
             price: price,
+            user: res.locals.user
           });
         });
       } else {
@@ -169,6 +173,7 @@ router.get("/edit-product/:id", function (req, res) {
               image: p.image,
               galleryImages: galleryImages,
               id: p._id,
+              user: res.locals.user
             });
           }
         });

@@ -1,19 +1,25 @@
- var express = require("express");
+var express = require("express");
 var router = express.Router();
 
 // Get Page model
 var Page = require("../models/page");
-
+var Category = require("../models/category");
 /*
  * GET /
  */
 router.get("/", function (req, res) {
   Page.findOne({ slug: "home" }, function (err, page) {
     if (err) console.log(err);
-
-    res.render("index", {
-      title:  page.title,
-      content:  page.content
+    Category.find(function (err, categories) {
+      if (err) return console.log(err);
+      // console.log(res.locals.user);
+      
+      res.render("index", {
+        title: page.title,
+        content: page.content,
+        user: req.user,
+        categories: categories,
+      });
     });
   });
 });
@@ -30,10 +36,12 @@ router.get("/:slug", function (req, res) {
     if (!page) {
       res.redirect("/");
     } else {
+      console.log(res.locals.user);
+
       res.render("index", {
         title: page.title,
         content: page.content,
-        slug:page.slug
+        user: res.locals.user
       });
     }
   });

@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs-extra');
-
+var auth = require('../config/auth');
+var isUser = auth.isUser;
+ 
 // Get Product model
 var Product = require('../models/product');
 
@@ -20,7 +22,8 @@ router.get('/', function (req, res) {
 
         res.render('all_products', {
             title: 'All products',
-            products: products
+            products: products,
+            user: res.locals.user
         });
     });
 
@@ -41,7 +44,8 @@ router.get('/:category', function (req, res) {
 
             res.render('cat_products', {
                 title: c.title,
-                products: products
+                products: products,
+                user: res.locals.user
             });
         });
     });
@@ -54,7 +58,7 @@ router.get('/:category', function (req, res) {
 router.get('/:category/:product', function (req, res) {
 
     var galleryImages = null;
-   // var loggedIn = (req.isAuthenticated()) ? true : false;
+    var loggedIn = (req.isAuthenticated()) ? true : false;
 
     Product.findOne({slug: req.params.product}, function (err, product) {
         if (err) {
@@ -67,12 +71,15 @@ router.get('/:category/:product', function (req, res) {
                     console.log(err);
                 } else {
                     galleryImages = files;
-
+                   
+                   
                     res.render('product', {
                         title: product.title,
                         p: product,
                         galleryImages: galleryImages,
-                        //loggedIn: loggedIn
+                        loggedIn: loggedIn,
+                        cart :res.locals.cart,
+                        user: res.locals.user
                     });
                 }
             });
